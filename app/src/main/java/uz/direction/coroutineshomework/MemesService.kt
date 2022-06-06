@@ -1,0 +1,46 @@
+package uz.direction.coroutineshomework
+
+import android.content.Context
+import android.util.Log
+import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
+import java.io.IOException
+import java.io.InputStream
+import java.nio.charset.Charset
+import kotlin.random.Random
+
+class MemesService {
+
+    fun subscribeToMemes(memesListener: MemesListener, context: Context) {
+        val jsonString: String = try {
+            val inputStream: InputStream = context.assets.open("facts.json")
+            val size: Int = inputStream.available()
+            val buffer = ByteArray(size)
+            inputStream.read(buffer)
+            inputStream.close()
+            String(buffer, Charset.defaultCharset())
+        } catch (e: IOException) {
+            Log.d("TAG", "json error $e")
+            memesListener.onError(e)
+            ""
+        }
+
+        try {
+            val memes = Gson().fromJson(jsonString, Array<Meme>::class.java)
+            val randomIndex = Random.nextInt(memes.size - 1)
+            memesListener.onSuccess(memes[randomIndex])
+        } catch (e: JsonSyntaxException) {
+            Log.d("TAG", "gson error $e")
+            memesListener.onError(e)
+        }
+    }
+
+}
+
+interface MemesListener {
+
+    fun onSuccess(meme: Meme)
+
+    fun onError(exception: Exception)
+
+}
