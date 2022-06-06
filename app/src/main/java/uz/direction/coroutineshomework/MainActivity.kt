@@ -5,9 +5,9 @@ import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var memesPresenter: MemesPresenter
+    private lateinit var memesPresenter: MemesPresenter
 
-    private val diContainer = DiContainer()
+    private val diContainer = DiContainer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

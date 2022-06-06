@@ -1,6 +1,6 @@
 package uz.direction.coroutineshomework
 
-class DiContainer {
+object DiContainer {
 
     val memesService by lazy { MemesService() }
 

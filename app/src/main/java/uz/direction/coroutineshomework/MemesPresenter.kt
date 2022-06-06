@@ -1,6 +1,8 @@
 package uz.direction.coroutineshomework
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 
 class MemesPresenter constructor(
     private val memesService: MemesService,
@@ -8,11 +10,12 @@ class MemesPresenter constructor(
 ) {
 
     private var _memeView: IMemeView? = null
+    private val handler = Handler(Looper.getMainLooper())
 
     fun onInitComplete() {
         memesService.subscribeToMemes(object : MemesListener {
             override fun onSuccess(meme: Meme) {
-                _memeView?.populate(meme)
+                handler.post { _memeView?.populate(meme) }
             }
 
             override fun onError(exception: Exception) {
