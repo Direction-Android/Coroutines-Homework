@@ -2,6 +2,17 @@ package uz.direction.coroutineshomework
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import kotlinx.coroutines.*
+
+val mainScope =
+    CoroutineScope(
+        Dispatchers.Main +
+                SupervisorJob() +
+                CoroutineExceptionHandler { _, _ ->
+                }
+                + CoroutineName("MainCoroutine"))
+
+lateinit var job: Job
 
 class MainActivity : AppCompatActivity() {
 
@@ -14,15 +25,19 @@ class MainActivity : AppCompatActivity() {
         val view = layoutInflater.inflate(R.layout.activity_main, null) as MemeView
         setContentView(view)
 
-        memesPresenter = MemesPresenter(diContainer.memesService, this)
-        view.presenter = memesPresenter
-        memesPresenter.attachView(view)
-        memesPresenter.onInitComplete()
+        job = mainScope.launch {
+            memesPresenter = MemesPresenter(diContainer.memesService, applicationContext)
+            view.presenter = memesPresenter
+            memesPresenter.attachView(view)
+            memesPresenter.onInitComplete()
+        }
+
     }
 
     override fun onStop() {
         if (isFinishing) {
             memesPresenter.detachView()
+            job.cancel()
         }
         super.onStop()
     }

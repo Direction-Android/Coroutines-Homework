@@ -1,28 +1,27 @@
 package uz.direction.coroutineshomework
 
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
+import kotlinx.coroutines.*
+
+val presenterScope =
+    CoroutineScope(
+        Dispatchers.Main +
+                SupervisorJob() +
+                CoroutineExceptionHandler { _, _ ->
+                }
+                + CoroutineName("PresenterCoroutine"))
 
 class MemesPresenter constructor(
     private val memesService: MemesService,
-    private val context: Context
+    private val context: Context,
 ) {
 
     private var _memeView: IMemeView? = null
-    private val handler = Handler(Looper.getMainLooper())
 
-    fun onInitComplete() {
-        memesService.subscribeToMemes(object : MemesListener {
-            override fun onSuccess(meme: Meme) {
-                handler.post { _memeView?.populate(meme) }
-            }
-
-            override fun onError(exception: Exception) {
-                CrashMonitor.trackWarning(exception.message.toString())
-            }
-
-        }, context)
+    suspend fun onInitComplete() {
+        var job = presenterScope.launch {
+            _memeView?.populate(memesService.subscribeToMemes(context))
+        }
     }
 
     fun attachView(memeView: IMemeView) {
