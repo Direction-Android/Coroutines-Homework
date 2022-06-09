@@ -1,6 +1,7 @@
 package uz.direction.coroutineshomework
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.*
 
@@ -8,7 +9,8 @@ val mainScope =
     CoroutineScope(
         Dispatchers.Main +
                 SupervisorJob() +
-                CoroutineExceptionHandler { _, _ ->
+                CoroutineExceptionHandler { _, exeption ->
+                    Log.e("Exection", "Exception $exeption is caught")
                 }
                 + CoroutineName("MainCoroutine"))
 

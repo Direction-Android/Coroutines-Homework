@@ -1,13 +1,15 @@
 package uz.direction.coroutineshomework
 
 import android.content.Context
+import android.util.Log
 import kotlinx.coroutines.*
 
 val presenterScope =
     CoroutineScope(
         Dispatchers.Main +
                 SupervisorJob() +
-                CoroutineExceptionHandler { _, _ ->
+                CoroutineExceptionHandler { _, exeption ->
+                    Log.e("Exection", "Exception $exeption is caught")
                 }
                 + CoroutineName("PresenterCoroutine"))
 
