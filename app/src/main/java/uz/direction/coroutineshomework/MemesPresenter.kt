@@ -9,7 +9,7 @@ val presenterScope =
         Dispatchers.Main +
                 SupervisorJob() +
                 CoroutineExceptionHandler { _, exeption ->
-                    Log.e("Exection", "Exception $exeption is caught")
+                    Log.e("Exception", "Exception $exeption is caught")
                 }
                 + CoroutineName("PresenterCoroutine"))
 
@@ -17,12 +17,11 @@ class MemesPresenter constructor(
     private val memesService: MemesService,
     private val context: Context,
 ) {
-
     private var _memeView: IMemeView? = null
 
-    suspend fun onInitComplete() {
-        var job = presenterScope.launch {
-            _memeView?.populate(memesService.subscribeToMemes(context))
+    fun onInitComplete() {
+        presenterScope.launch {
+            _memeView?.populate(memesService.subscribeToMemes(presenterScope, context))
         }
     }
 
@@ -32,6 +31,7 @@ class MemesPresenter constructor(
 
     fun detachView() {
         _memeView = null
+        presenterScope.cancel()
     }
 
 }
